@@ -36,8 +36,13 @@ export default class Network {
 
   compute(inputs: number[]) {
     this.#inputLayer.setInputs(inputs)
+    this.unCache()
 
     return this.#outputLayer.output()
+  }
+
+  unCache() {
+    [...this.hiddenLayers, this.outputLayer].forEach(layer => layer.unCache())
   }
 
   train(inputs: number[], outputs: number[], learningRate: number = 0.2) {

@@ -34,4 +34,8 @@ export default class Layer {
   output() {
     return this.neurons.map(neuron => neuron.output())
   }
+
+  unCache() {
+    this.neurons.forEach(neuron => neuron.unCache())
+  }
 }

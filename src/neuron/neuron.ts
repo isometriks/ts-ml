@@ -4,6 +4,7 @@ import Sigmoid from "../function/sigmoid.ts";
 export default class Neuron implements ConnectableNeuronInterface {
   static neuronCount = 0
 
+  #output: number | null = null
   #func: FunctionInterface
   #synapses: Synapse[]
   #reverseSynapseNeurons: NeuronInterface[]
@@ -27,6 +28,10 @@ export default class Neuron implements ConnectableNeuronInterface {
 
   addReverseSynapseNeuron(neuron: NeuronInterface, synapse: Synapse) {
     this.#reverseSynapseNeurons.push([neuron, synapse])
+  }
+
+  unCache() {
+    this.#output = null
   }
 
   get synapses() {
@@ -54,13 +59,17 @@ export default class Neuron implements ConnectableNeuronInterface {
   }
 
   output(): number {
+    if (this.#output !== null) {
+      return this.#output
+    }
+
     const sum = this.#synapses.reduce((accumulator, synapse) => {
       return accumulator + (synapse.weight * synapse.neuron.output())
     }, this.#bias)
 
     //console.log(this, sum)
 
-    return this.#func.compute(sum)
+    return (this.#output = this.#func.compute(sum))
   }
 
   derivative() {

@@ -3,6 +3,7 @@ import Synapse from "./neuron/synapse.ts";
 declare global {
   interface NeuronInterface {
     output(): number
+    unCache(): void
     derivative(): number
     addReverseSynapseNeuron(neuron: NeuronInterface, synapse: Synapse)
     set sigma(sigma: number)
