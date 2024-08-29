@@ -13,7 +13,7 @@ export default class Backpropagation {
 
   train(inputs: number[], outputs: number[]) {
     const computedOutput = this.#network.compute(inputs)
-    const adjustments: [Synapse, number, number][] = []
+    const adjustments = new Map<Synapse, [number, number]>()
     const layers = [...this.#network.hiddenLayers, this.#network.outputLayer]
 
     for (const layer: Layer of layers.toReversed()) {
@@ -24,14 +24,14 @@ export default class Backpropagation {
 
         outputNeuron.sigma = grad
         outputNeuron.synapses.forEach(synapse => {
-          adjustments.push([synapse, grad, synapse.neuron.output()])
+          adjustments.set(synapse, [grad, synapse.neuron.output()])
         })
       })
     }
 
-    adjustments.forEach(([synapse, grad, output]) => {
+    for (const [synapse, [grad, output]] of adjustments.entries()) {
       synapse.adjust(grad * this.#learningRate * output)
-    })
+    }
   }
 
   #calculateOutputGradient(neuron: ConnectableNeuronInterface, error) {
