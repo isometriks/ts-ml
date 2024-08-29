@@ -2,6 +2,8 @@ import Network from "../network/network.ts";
 import Synapse from "../neuron/synapse.ts";
 import Layer from "../network/layer.ts";
 
+type Adjustments = Map<Synapse, [number, number]>
+
 export default class Backpropagation {
   readonly #network: Network
   readonly #learningRate: number
@@ -12,8 +14,13 @@ export default class Backpropagation {
   }
 
   train(inputs: number[], outputs: number[]) {
+    const adjustments = this.#getAdjustments(inputs, outputs)
+    this.#applyAdjustments(adjustments)
+  }
+
+  #getAdjustments(inputs: number[], outputs: number[]) {
     const computedOutput = this.#network.compute(inputs)
-    const adjustments = new Map<Synapse, [number, number]>()
+    const adjustments: Adjustments = new Map()
     const layers = [...this.#network.hiddenLayers, this.#network.outputLayer]
 
     for (const layer: Layer of layers.toReversed()) {
@@ -29,6 +36,10 @@ export default class Backpropagation {
       })
     }
 
+    return adjustments
+  }
+
+  #applyAdjustments(adjustments: Adjustments) {
     for (const [synapse, [grad, output]] of adjustments.entries()) {
       synapse.adjust(grad * this.#learningRate * output)
     }
