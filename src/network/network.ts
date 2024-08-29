@@ -45,44 +45,6 @@ export default class Network {
     [...this.hiddenLayers, this.outputLayer].forEach(layer => layer.unCache())
   }
 
-  train(inputs: number[], outputs: number[], learningRate: number = 0.2) {
-    const computedOutput = this.compute(inputs)
-    const adjustments: [Synapse, number, number][] = []
-    const layers = [...this.#hiddenLayers, this.#outputLayer]
-
-    for (const layer: Layer of layers.toReversed()) {
-      layer.neurons.forEach((outputNeuron, index) => {
-        const grad = layer === this.#outputLayer ?
-          this.#calculateOutputGradient(outputNeuron, outputs[index] - computedOutput[index]) :
-          this.#calculateHiddenGradient(outputNeuron)
-
-        outputNeuron.sigma = grad
-        outputNeuron.synapses.forEach(synapse => {
-          adjustments.push([synapse, grad, synapse.neuron.output()])
-        })
-      })
-    }
-
-    adjustments.forEach(([synapse, grad, output]) => {
-      synapse.adjust(grad * learningRate * output)
-    })
-  }
-
-  #calculateOutputGradient(neuron: ConnectableNeuronInterface, error) {
-    return neuron.derivative() * error
-  }
-
-  #calculateHiddenGradient(neuron: ConnectableNeuronInterface)
-  {
-    let a = 0;
-
-    for (const [prevNeuron, synapse] of neuron.reverseSynapseNeurons) {
-      a += prevNeuron.sigma * synapse.weight
-    }
-
-    return neuron.derivative() * a
-  }
-
   get inputLayer(): Layer {
     return this.#inputLayer
   }

@@ -1,6 +1,7 @@
 //import './style.css'
 import Network from "./network/network.ts";
 import Renderer from "./render/renderer.ts";
+import Backpropagation from "./trainer/backpropagation.ts";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="graph" style="margin: 0 auto; width: 100%; height: 400px;"></div>
@@ -16,13 +17,14 @@ const xorSamples = [
 
 const network = new Network(2, 1, [3, 3])
 const renderer = new Renderer(document.getElementById("graph")!)
+const trainer = new Backpropagation(network, 0.3)
 
 console.time("train")
 for (let i = 0; i < 200000; i++) {
   const samples = xorSamples.sort( () => .5 - Math.random() )
 
   for (const [inputs, outputs] of samples) {
-    network.train(inputs, outputs)
+    trainer.train(inputs, outputs)
   }
 }
 console.timeEnd("train")
