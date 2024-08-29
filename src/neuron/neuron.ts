@@ -1,0 +1,69 @@
+import Synapse from "./synapse.ts";
+import Sigmoid from "../function/sigmoid.ts";
+
+export default class Neuron implements ConnectableNeuronInterface {
+  static neuronCount = 0
+
+  #func: FunctionInterface
+  #synapses: Synapse[]
+  #reverseSynapseNeurons: NeuronInterface[]
+  #sigma: number
+  #id: number
+  #bias: number
+
+  constructor(func: FunctionInterface = Sigmoid.instance()) {
+    this.#func = func
+    this.#synapses = []
+    this.#reverseSynapseNeurons = []
+    this.#id = Neuron.neuronCount++
+    this.#bias = Math.random() * 6 - 3
+  }
+
+  addSynapse(neuron: NeuronInterface, weight: number = 1.0) {
+    const synapse = new Synapse(neuron, weight)
+    this.#synapses.push(synapse)
+    neuron.addReverseSynapseNeuron(this, synapse)
+  }
+
+  addReverseSynapseNeuron(neuron: NeuronInterface, synapse: Synapse) {
+    this.#reverseSynapseNeurons.push([neuron, synapse])
+  }
+
+  get synapses() {
+    return this.#synapses
+  }
+
+  get reverseSynapseNeurons() {
+    return this.#reverseSynapseNeurons
+  }
+
+  get identifier() {
+    return `neuron_${this.#id}`
+  }
+
+  get label() {
+    return `Neuron ${this.#id}: ${this.output().toFixed(4)}`
+  }
+
+  set sigma(sigma: number) {
+    this.#sigma = sigma
+  }
+
+  get sigma() {
+    return this.#sigma
+  }
+
+  output(): number {
+    const sum = this.#synapses.reduce((accumulator, synapse) => {
+      return accumulator + (synapse.weight * synapse.neuron.output())
+    }, this.#bias)
+
+    //console.log(this, sum)
+
+    return this.#func.compute(sum)
+  }
+
+  derivative() {
+    return this.#func.derivative(this.output())
+  }
+}
