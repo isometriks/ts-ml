@@ -17,6 +17,7 @@ const xorSamples = [
 const network = new Network(2, 1, [3, 3])
 const renderer = new Renderer(document.getElementById("graph")!)
 
+console.time("train")
 for (let i = 0; i < 200000; i++) {
   const samples = xorSamples.sort( () => .5 - Math.random() )
 
@@ -24,6 +25,7 @@ for (let i = 0; i < 200000; i++) {
     network.train(inputs, outputs)
   }
 }
+console.timeEnd("train")
 
 network.compute([1, 0])
 
