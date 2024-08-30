@@ -2,7 +2,7 @@ import Network from "../network/network.ts";
 import Synapse from "../neuron/synapse.ts";
 import Layer from "../network/layer.ts";
 
-type Adjustments = Map<Synapse, [number, number]>
+type Adjustments = Map<Synapse, number>
 
 export default class Backpropagation {
   readonly #network: Network
@@ -31,7 +31,7 @@ export default class Backpropagation {
 
         outputNeuron.sigma = grad
         outputNeuron.synapses.forEach(synapse => {
-          adjustments.set(synapse, [grad, synapse.neuron.output()])
+          adjustments.set(synapse, grad * synapse.neuron.output())
         })
       })
     }
@@ -40,8 +40,8 @@ export default class Backpropagation {
   }
 
   #applyAdjustments(adjustments: Adjustments) {
-    for (const [synapse, [grad, output]] of adjustments.entries()) {
-      synapse.adjust(grad * this.#learningRate * output)
+    for (const [synapse, adjustment] of adjustments.entries()) {
+      synapse.adjust(adjustment * this.#learningRate)
     }
   }
 
