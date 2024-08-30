@@ -67,8 +67,6 @@ export default class Neuron implements ConnectableNeuronInterface {
       return accumulator + (synapse.weight * synapse.neuron.output())
     }, this.#bias)
 
-    //console.log(this, sum)
-
     return (this.#output = this.#func.compute(sum))
   }
 

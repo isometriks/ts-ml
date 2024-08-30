@@ -21,11 +21,7 @@ const trainer = new Backpropagation(network, 0.3)
 
 console.time("train")
 for (let i = 0; i < 200000; i++) {
-  const samples = xorSamples.sort( () => .5 - Math.random() )
-
-  for (const [inputs, outputs] of samples) {
-    trainer.train(inputs, outputs)
-  }
+  trainer.trainBatch(xorSamples)
 }
 console.timeEnd("train")
 

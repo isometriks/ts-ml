@@ -18,6 +18,27 @@ export default class Backpropagation {
     this.#applyAdjustments(adjustments)
   }
 
+  trainBatch(samples: [number[], number[]][]) {
+    const allAdjustments: Adjustments[] = []
+    const randomizedSamples = [...samples].sort(() => .5 - Math.random())
+
+    for (const [inputs, outputs] of randomizedSamples)  {
+      allAdjustments.push(this.#getAdjustments(inputs, outputs))
+    }
+
+    const finalAdjustment: Adjustments = new Map()
+
+    // Average together all adjustments from batch
+    for (const adjustment of allAdjustments) {
+      for (const [synapse, delta] of adjustment.entries()) {
+        const existing = finalAdjustment.get(synapse) ?? 0
+        finalAdjustment.set(synapse, existing + delta / allAdjustments.length)
+      }
+    }
+
+    this.#applyAdjustments(finalAdjustment)
+  }
+
   #getAdjustments(inputs: number[], outputs: number[]) {
     const computedOutput = this.#network.compute(inputs)
     const adjustments: Adjustments = new Map()
@@ -31,7 +52,7 @@ export default class Backpropagation {
 
         outputNeuron.sigma = grad
         outputNeuron.synapses.forEach(synapse => {
-          adjustments.set(synapse, grad * synapse.neuron.output())
+          adjustments.set(synapse, grad * synapse.neuron.output() * this.#learningRate)
         })
       })
     }
@@ -41,7 +62,7 @@ export default class Backpropagation {
 
   #applyAdjustments(adjustments: Adjustments) {
     for (const [synapse, adjustment] of adjustments.entries()) {
-      synapse.adjust(adjustment * this.#learningRate)
+      synapse.adjust(adjustment)
     }
   }
 
