@@ -16,10 +16,10 @@ const network = new Network(
   // Inputs
   2,
   // Output
-  { neurons: 1, activationFunction: Sigmoid.instance() },
+  { neurons: 1, activationFunction: ActivationFunction.Sigmoid },
   // Hidden layers
   [
-    { neurons: 3, activationFunction: Sigmoid.instance(), bias: 1 },
+    { neurons: 3, activationFunction: ActivationFunction.Relu, bias: 1 },
     { neurons: 3, bias: 0.5 } // Default function is Sigmoid
   ]
 )
@@ -54,4 +54,22 @@ trainer.trainBatch(xorSamples)
 
 ```ts
 network.compute(xorSamples[0].inputs)
+```
+
+## Importing and Exporting Networks
+
+### Export
+
+Exporting the network will maintain all weights, activation functions, and biases when importing again.
+
+```ts
+const networkExport = network.export()
+const networkJson = JSON.stringify(networkExport)
+```
+
+### Import
+
+```ts
+const networkExport = JSON.parse(networkJson)
+const network = Network.fromNetworkExport(networkExport)
 ```

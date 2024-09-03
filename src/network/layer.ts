@@ -1,15 +1,14 @@
-import Sigmoid from "../function/sigmoid.ts";
-import Neuron from "../neuron/neuron.ts";
+import Neuron, { ActivationFunction } from "../neuron/neuron.ts";
 import AttachableLayer from "./attachable-layer.ts";
 
 export default class Layer extends AttachableLayer {
   #neurons: ConnectableNeuronInterface[] = []
 
-  constructor(nodes: number, func: FunctionInterface = Sigmoid.instance(), bias: number = 0) {
+  constructor(nodes: number, activationFunction: ActivationFunction = ActivationFunction.Sigmoid, bias: number = 0) {
     super()
 
     for (let i=0; i < nodes; i++) {
-      this.#neurons.push(new Neuron(func, bias))
+      this.#neurons.push(new Neuron(activationFunction, bias))
     }
   }
 

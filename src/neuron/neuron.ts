@@ -1,5 +1,18 @@
 import Synapse from "./synapse.ts";
+import Relu from "../function/relu.ts";
 import Sigmoid from "../function/sigmoid.ts";
+
+export enum ActivationFunction {
+  Sigmoid,
+  Relu,
+}
+
+const getActivationInstance = (type: ActivationFunction): FunctionInterface => {
+  switch(type) {
+    case ActivationFunction.Sigmoid: return Sigmoid.instance()
+    case ActivationFunction.Relu: return Relu.instance()
+  }
+}
 
 export default class Neuron implements ConnectableNeuronInterface {
   static neuronCount = 0
@@ -12,8 +25,8 @@ export default class Neuron implements ConnectableNeuronInterface {
   #id: number
   #bias: number
 
-  constructor(func: FunctionInterface = Sigmoid.instance(), bias: number = 0) {
-    this.#func = func
+  constructor(activationFunction: ActivationFunction = ActivationFunction.Sigmoid, bias: number = 0) {
+    this.#func = getActivationInstance(activationFunction)
     this.#id = Neuron.neuronCount++
     this.#bias = Math.random() * (bias * 2) - bias
   }
@@ -54,6 +67,14 @@ export default class Neuron implements ConnectableNeuronInterface {
 
   get sigma() {
     return this.#sigma
+  }
+
+  set bias(bias: number) {
+    this.#bias = bias
+  }
+
+  get bias() {
+    return this.#bias
   }
 
   output(): number {

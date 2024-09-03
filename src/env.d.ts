@@ -8,6 +8,8 @@ declare global {
     addReverseSynapseNeuron(neuron: NeuronInterface, synapse: Synapse)
     set sigma(sigma: number)
     get sigma(): number
+    get bias(): number
+    set bias(bias: number)
     get reverseSynapseNeurons(): [NeuronInterface, Synapse][]
     get identifier(): string
     get label(): string
