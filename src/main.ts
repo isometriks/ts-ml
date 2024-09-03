@@ -1,4 +1,3 @@
-//import './style.css'
 import Network from "./network/network.ts";
 import Renderer from "./render/renderer.ts";
 import Backpropagation from "./trainer/backpropagation.ts";

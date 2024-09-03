@@ -1,21 +1,46 @@
 import Layer from "./layer.ts";
 import InputLayer from "./input-layer.ts";
+import { ActivationFunction } from "../neuron/neuron.ts";
 
 interface LayerConfiguration {
   neurons: number
-  activationFunction?: FunctionInterface
+  activationFunction?: ActivationFunction
 }
 
 interface HiddenLayerConfiguration extends LayerConfiguration {
   bias?: number
 }
 
+interface NetworkExport {
+  shape: {
+    inputs: number,
+    outputs: LayerConfiguration,
+    hiddenLayers: HiddenLayerConfiguration[]
+  },
+  layers: {
+    neurons: {
+      synapses: {
+        weight: number
+      }[]
+      bias: number
+    }[]
+  }[]
+}
+
 export default class Network {
+  #inputsConfig: number
+  #outputsConfig: LayerConfiguration
+  #hiddenLayersConfig: HiddenLayerConfiguration[]
+
   #inputLayer: InputLayer
   #outputLayer: Layer
   #hiddenLayers: Layer[] = []
 
   constructor(inputs: number, outputLayer: LayerConfiguration, hiddenLayers: HiddenLayerConfiguration[] = []) {
+    this.#inputsConfig = inputs
+    this.#outputsConfig = outputLayer
+    this.#hiddenLayersConfig = hiddenLayers
+
     this.#inputLayer = new InputLayer(inputs)
     this.#outputLayer = new Layer(outputLayer.neurons, outputLayer.activationFunction, 0)
 
@@ -68,5 +93,55 @@ export default class Network {
 
   get hiddenLayers(): Layer[] {
     return this.#hiddenLayers
+  }
+
+  export(): NetworkExport {
+    const layers = [this.outputLayer, ...this.hiddenLayers.toReversed()].map(layer => {
+      return {
+        neurons: layer.neurons.map(neuron => {
+          return {
+            bias: neuron.bias,
+            synapses: neuron.synapses.map(synapse => {
+              return { weight: synapse.weight }
+            })
+          }
+        })
+      }
+    });
+
+    return {
+      shape: {
+        inputs: this.#inputsConfig,
+        outputs: this.#outputsConfig,
+        hiddenLayers: this.#hiddenLayersConfig,
+      },
+      layers
+    }
+  }
+
+  import(exportedNetwork: NetworkExport) {
+    const layers = [this.outputLayer, ...this.hiddenLayers.toReversed()]
+
+    exportedNetwork.layers.forEach((layer, layerIndex) => {
+      layer.neurons.forEach((neuron, neuronIndex) => {
+        layers[layerIndex].neurons[neuronIndex].bias = neuron.bias
+
+        neuron.synapses.forEach(({ weight }, synapseIndex) => {
+          layers[layerIndex].neurons[neuronIndex].synapses[synapseIndex].weight = weight
+        })
+      })
+    })
+  }
+
+  static fromNetworkExport(exportedNetwork: NetworkExport) {
+    const network = new this(
+      exportedNetwork.shape.inputs,
+      exportedNetwork.shape.outputs,
+      exportedNetwork.shape.hiddenLayers
+    )
+
+    network.import(exportedNetwork)
+
+    return network
   }
 }
