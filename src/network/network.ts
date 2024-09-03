@@ -12,7 +12,7 @@ interface HiddenLayerConfiguration extends LayerConfiguration {
   bias?: number
 }
 
-interface NetworkExport {
+export interface NetworkExport {
   shape: {
     inputs: number,
     outputs: LayerConfiguration,

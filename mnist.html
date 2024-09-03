@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+  </head>
+  <body>
+    <div id="mnist" class="ui container" style="text-align: center">
+        <div style="width: 56px; height: 56px; margin: 20px auto; padding-top: 40px; padding-bottom: 50px">
+          <canvas id="digit" style="zoom: 200%;"></canvas>
+        </div>
+
+        <div id="output"></div>
+        <button class="ui button primary" id="next">Next Digit</button>
+        <button class="ui button secondary" id="rerun">Run More Batches</button>
+
+        <div id="cycles"></div>
+        <div id="correctness"></div>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/mnist.ts"></script>
+  </body>
+</html>

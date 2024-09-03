@@ -14,7 +14,7 @@ export default class Backpropagation {
 
   train(sample: TrainingSample) {
     const adjustments = this.#getAdjustments(sample.inputs, sample.outputs)
-    this.#applyAdjustments(adjustments)
+    this.applyAdjustments(adjustments)
   }
 
   trainBatch(samples: TrainingSample[]) {
@@ -43,7 +43,9 @@ export default class Backpropagation {
       })
     }
 
-    this.#applyAdjustments(finalAdjustment)
+    this.applyAdjustments(finalAdjustment)
+
+    return finalAdjustment
   }
 
   #getAdjustments(inputs: number[], outputs: number[]) {
@@ -72,7 +74,8 @@ export default class Backpropagation {
     return adjustments
   }
 
-  #applyAdjustments(adjustments: Adjustments) {
+
+  applyAdjustments(adjustments: Adjustments) {
     adjustments.forEach((neurons, layerIndex) => {
       neurons.forEach((synapses, neuronIndex) => {
         synapses.forEach((adjustment, synapseIndex) => {
