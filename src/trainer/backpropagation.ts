@@ -17,11 +17,11 @@ export default class Backpropagation {
     this.#applyAdjustments(adjustments)
   }
 
-  trainBatch(samples: number[][][]) {
+  trainBatch(samples: TrainingSample[]) {
     const allAdjustments: Adjustments[] = []
     const randomizedSamples = [...samples].sort(() => .5 - Math.random())
 
-    for (const [inputs, outputs] of randomizedSamples)  {
+    for (const { inputs, outputs} of randomizedSamples)  {
       allAdjustments.push(this.#getAdjustments(inputs, outputs))
     }
 

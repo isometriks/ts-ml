@@ -22,4 +22,9 @@ declare global {
     compute(x: number): number
     derivative(x: number): number
   }
+
+  interface TrainingSample {
+    inputs: number[]
+    outputs: number[]
+  }
 }

@@ -7,15 +7,17 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="graph" style="margin: 0 auto; width: 100%; height: 400px;"></div>
 `
 
-// [inputs, expected output]
 const xorSamples = [
-  [[0, 0], [0]],
-  [[0, 1], [1]],
-  [[1, 0], [1]],
-  [[1, 1], [0]],
+  { inputs: [0, 0], outputs: [0] },
+  { inputs: [0, 1], outputs: [1] },
+  { inputs: [1, 0], outputs: [1] },
+  { inputs: [1, 1], outputs: [0] },
 ];
 
-const network = new Network(2, { neurons: 1 }, [{ neurons: 3 }, { neurons: 3 }])
+const network = new Network(2, { neurons: 1 }, [
+  { neurons: 3, bias: 0 },
+  { neurons: 3, bias: 0 }
+])
 const renderer = new Renderer(document.getElementById("graph")!)
 const trainer = new Backpropagation(network, 0.3)
 
@@ -29,6 +31,6 @@ network.compute([1, 0])
 
 renderer.draw(network)
 
-for (const [inputs, outputs] of xorSamples) {
+for (const { inputs, outputs } of xorSamples) {
   console.log("Inputs", inputs, "should be", outputs, " == ", network.compute(inputs))
 }
