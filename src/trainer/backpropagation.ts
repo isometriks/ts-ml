@@ -12,8 +12,8 @@ export default class Backpropagation {
     this.#learningRate = learningRate
   }
 
-  train(inputs: number[], outputs: number[]) {
-    const adjustments = this.#getAdjustments(inputs, outputs)
+  train(sample: TrainingSample) {
+    const adjustments = this.#getAdjustments(sample.inputs, sample.outputs)
     this.#applyAdjustments(adjustments)
   }
 

@@ -7,7 +7,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="graph" style="margin: 0 auto; width: 100%; height: 400px;"></div>
 `
 
-const xorSamples = [
+const xorSamples: TrainingSample[] = [
   { inputs: [0, 0], outputs: [0] },
   { inputs: [0, 1], outputs: [1] },
   { inputs: [1, 0], outputs: [1] },
