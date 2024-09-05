@@ -72,12 +72,11 @@ export default class Backpropagation {
 
   #calculateHiddenGradient(neuron: ConnectableNeuronInterface)
   {
-    let a = 0;
-
-    for (const [prevNeuron, synapse] of neuron.reverseSynapseNeurons) {
-      a += prevNeuron.sigma * synapse.weight
-    }
-
-    return neuron.derivative() * a
+    return neuron.derivative() * neuron.reverseSynapseNeurons.reduce(
+      (accumulator, [prevNeuron, synapse]) => {
+        return accumulator + prevNeuron.sigma * synapse.weight
+      },
+      0
+    )
   }
 }
