@@ -1,7 +1,7 @@
 import Network from "../network/network.ts";
-import Synapse from "../neuron/synapse.ts";
+import Layer from "../network/layer.ts";
 
-type Adjustments = Map<Synapse, number>
+type Adjustments = number[][][]
 
 export default class Backpropagation {
   readonly #network: Network
@@ -25,14 +25,22 @@ export default class Backpropagation {
       allAdjustments.push(this.#getAdjustments(inputs, outputs))
     }
 
-    const finalAdjustment: Adjustments = new Map()
+    const finalAdjustment: Adjustments = []
 
     // Average together all adjustments from batch
     for (const adjustment of allAdjustments) {
-      for (const [synapse, delta] of adjustment.entries()) {
-        const existing = finalAdjustment.get(synapse) ?? 0
-        finalAdjustment.set(synapse, existing + delta / allAdjustments.length)
-      }
+      adjustment.forEach((neurons, layerIndex) => {
+        finalAdjustment[layerIndex] ??= []
+
+        neurons.forEach((synapses, neuronIndex) => {
+          finalAdjustment[layerIndex][neuronIndex] ??= []
+
+          synapses.forEach((delta, synapseIndex) => {
+            const existing = finalAdjustment[layerIndex][neuronIndex][synapseIndex] ?? 0
+            finalAdjustment[layerIndex][neuronIndex][synapseIndex] = existing + delta / allAdjustments.length
+          })
+        })
+      })
     }
 
     this.#applyAdjustments(finalAdjustment)
@@ -40,30 +48,38 @@ export default class Backpropagation {
 
   #getAdjustments(inputs: number[], outputs: number[]) {
     const computedOutput = this.#network.compute(inputs)
-    const adjustments: Adjustments = new Map()
-    const layers = [...this.#network.hiddenLayers, this.#network.outputLayer]
+    const adjustments: Adjustments = []
+    const layers: Layer[] = [this.#network.outputLayer, ...this.#network.hiddenLayers.toReversed()]
 
-    for (const layer of layers.toReversed()) {
-      layer.neurons.forEach((outputNeuron, index) => {
+    layers.forEach((layer, layerIndex) => {
+      adjustments[layerIndex] = []
+
+      layer.neurons.forEach((neuron, neuronIndex) => {
+        adjustments[layerIndex][neuronIndex] = []
+
         const grad = layer === this.#network.outputLayer ?
-          this.#calculateOutputGradient(outputNeuron, outputs[index] - computedOutput[index]) :
-          this.#calculateHiddenGradient(outputNeuron)
+          this.#calculateOutputGradient(neuron, outputs[neuronIndex] - computedOutput[neuronIndex]) :
+          this.#calculateHiddenGradient(neuron)
 
-        outputNeuron.sigma = grad
+        neuron.sigma = grad
 
-        for (const synapse of outputNeuron.synapses) {
-          adjustments.set(synapse, grad * synapse.neuron.output() * this.#learningRate)
-        }
+        neuron.synapses.forEach((synapse, synapseIndex) => {
+          adjustments[layerIndex][neuronIndex][synapseIndex] =  grad * synapse.neuron.output()
+        })
       })
-    }
+    })
 
     return adjustments
   }
 
   #applyAdjustments(adjustments: Adjustments) {
-    for (const [synapse, adjustment] of adjustments.entries()) {
-      synapse.adjust(adjustment)
-    }
+    adjustments.forEach((neurons, layerIndex) => {
+      neurons.forEach((synapses, neuronIndex) => {
+        synapses.forEach((adjustment, synapseIndex) => {
+          this.#network.getSynapse(layerIndex, neuronIndex, synapseIndex).adjust(adjustment  * this.#learningRate)
+        })
+      })
+    })
   }
 
   #calculateOutputGradient(neuron: ConnectableNeuronInterface, error: number) {
