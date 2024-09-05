@@ -12,10 +12,10 @@ export default class Neuron implements ConnectableNeuronInterface {
   #id: number
   #bias: number
 
-  constructor(func: FunctionInterface = Sigmoid.instance()) {
+  constructor(func: FunctionInterface = Sigmoid.instance(), bias: number) {
     this.#func = func
     this.#id = Neuron.neuronCount++
-    this.#bias = Math.random() * 6 - 3
+    this.#bias = Math.random() * (bias * 2) - bias
   }
 
   addSynapse(neuron: NeuronInterface, weight: number = 1.0) {

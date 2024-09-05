@@ -1,34 +1,16 @@
 import Sigmoid from "../function/sigmoid.ts";
 import Neuron from "../neuron/neuron.ts";
-import BiasNeuron from "../neuron/bias-neuron.ts";
+import AttachableLayer from "./attachable-layer.ts";
 
-export default class Layer {
+export default class Layer extends AttachableLayer {
   #neurons: ConnectableNeuronInterface[] = []
 
-  constructor(nodes: number, func: FunctionInterface = Sigmoid.instance(), bias: boolean = true) {
+  constructor(nodes: number, func: FunctionInterface = Sigmoid.instance(), bias: number = 3) {
+    super()
+
     for (let i=0; i < nodes; i++) {
-      this.#neurons.push(this.createNeuron(func))
+      this.#neurons.push(new Neuron(func, bias))
     }
-
-    if (bias) {
-      this.#neurons.push(new BiasNeuron())
-    }
-  }
-
-  attachNeuron(neuron: ConnectableNeuronInterface) {
-    for (const neighbor of this.#neurons) {
-      neuron.addSynapse(neighbor, Math.random())
-    }
-  }
-
-  attachLayer(layer: Layer) {
-    for (const neuron of layer.#neurons) {
-      this.attachNeuron(neuron)
-    }
-  }
-
-  createNeuron(func: FunctionInterface) {
-    return new Neuron(func)
   }
 
   output() {
