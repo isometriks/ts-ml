@@ -1,11 +1,10 @@
 import Neuron from "./neuron.ts";
-import Sigmoid from "../function/sigmoid.ts";
 
 export default class InputNeuron extends Neuron {
   #value: number
 
   constructor(value: number = 0) {
-    super(Sigmoid.instance(), 0)
+    super()
     this.#value = value
   }
 
@@ -16,7 +15,6 @@ export default class InputNeuron extends Neuron {
   get identifier() {
     return `input_${super.identifier}`
   }
-
 
   get label() {
     return `Input Neuron: ${this.#value}`

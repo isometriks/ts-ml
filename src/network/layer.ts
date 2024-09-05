@@ -5,7 +5,7 @@ import AttachableLayer from "./attachable-layer.ts";
 export default class Layer extends AttachableLayer {
   #neurons: ConnectableNeuronInterface[] = []
 
-  constructor(nodes: number, func: FunctionInterface = Sigmoid.instance(), bias: number = 3) {
+  constructor(nodes: number, func: FunctionInterface = Sigmoid.instance(), bias: number = 0) {
     super()
 
     for (let i=0; i < nodes; i++) {
