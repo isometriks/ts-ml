@@ -1,6 +1,7 @@
 import Layer from "./layer.ts";
 import InputLayer from "./input-layer.ts";
 import { ActivationFunction } from "../neuron/neuron.ts";
+import Synapse from "../neuron/synapse.ts";
 
 interface LayerConfiguration {
   neurons: number
@@ -95,6 +96,21 @@ export default class Network {
     return this.#hiddenLayers
   }
 
+  /**
+   * Gets a layer starting from output layer as 0th index
+   */
+  getLayer(layerIndex: number): Layer {
+    return [this.outputLayer, ...this.hiddenLayers.toReversed()][layerIndex]
+  }
+
+  getNeuron(layerIndex: number, neuronIndex: number): ConnectableNeuronInterface {
+    return this.getLayer(layerIndex).neurons[neuronIndex]
+  }
+
+  getSynapse(layerIndex: number, neuronIndex: number, synapseIndex: number): Synapse {
+    return this.getNeuron(layerIndex, neuronIndex).synapses[synapseIndex]
+  }
+
   export(): NetworkExport {
     const layers = [this.outputLayer, ...this.hiddenLayers.toReversed()].map(layer => {
       return {
@@ -120,14 +136,12 @@ export default class Network {
   }
 
   import(exportedNetwork: NetworkExport) {
-    const layers = [this.outputLayer, ...this.hiddenLayers.toReversed()]
-
     exportedNetwork.layers.forEach((layer, layerIndex) => {
       layer.neurons.forEach((neuron, neuronIndex) => {
-        layers[layerIndex].neurons[neuronIndex].bias = neuron.bias
+        this.getNeuron(layerIndex, neuronIndex).bias = neuron.bias
 
         neuron.synapses.forEach(({ weight }, synapseIndex) => {
-          layers[layerIndex].neurons[neuronIndex].synapses[synapseIndex].weight = weight
+          this.getSynapse(layerIndex, neuronIndex, synapseIndex).weight = weight
         })
       })
     })
