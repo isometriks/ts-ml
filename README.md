@@ -73,3 +73,17 @@ const networkJson = JSON.stringify(networkExport)
 const networkExport = JSON.parse(networkJson)
 const network = Network.fromNetworkExport(networkExport)
 ```
+
+## Visualizing
+
+```ts
+const renderer = new Renderer(document.getElementById("graph")!)
+renderer.draw(network)
+```
+
+Sample XOR Network with 2 hidden layers
+
+![XOR Network](./doc/image/rendering-xor.png)
+
+Currently, the graph library doesn't do a great job of fitting the whole network, so adjusting some of the 
+coordinates in the renderer is needed. For larger networks, it's not very feasible to render.
