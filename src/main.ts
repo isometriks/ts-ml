@@ -29,11 +29,6 @@ network.compute([1, 0])
 
 renderer.draw(network)
 
-window.draw = (inputs) => {
-  network.compute(inputs)
-  renderer.draw(network)
-}
-
 for (const [inputs, outputs] of xorSamples) {
   console.log("Inputs", inputs, "should be", outputs, " == ", network.compute(inputs))
 }

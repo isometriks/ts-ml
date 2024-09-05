@@ -1,6 +1,5 @@
 import Layer from "./layer.ts";
 import InputLayer from "./input-layer.ts";
-import Synapse from "../neuron/synapse.ts";
 
 export default class Network {
   #inputLayer: InputLayer

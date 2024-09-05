@@ -1,6 +1,5 @@
 import Network from "../network/network.ts";
 import Synapse from "../neuron/synapse.ts";
-import Layer from "../network/layer.ts";
 
 type Adjustments = Map<Synapse, number>
 
@@ -18,7 +17,7 @@ export default class Backpropagation {
     this.#applyAdjustments(adjustments)
   }
 
-  trainBatch(samples: [number[], number[]][]) {
+  trainBatch(samples: number[][][]) {
     const allAdjustments: Adjustments[] = []
     const randomizedSamples = [...samples].sort(() => .5 - Math.random())
 
@@ -44,16 +43,17 @@ export default class Backpropagation {
     const adjustments: Adjustments = new Map()
     const layers = [...this.#network.hiddenLayers, this.#network.outputLayer]
 
-    for (const layer: Layer of layers.toReversed()) {
+    for (const layer of layers.toReversed()) {
       layer.neurons.forEach((outputNeuron, index) => {
         const grad = layer === this.#network.outputLayer ?
           this.#calculateOutputGradient(outputNeuron, outputs[index] - computedOutput[index]) :
           this.#calculateHiddenGradient(outputNeuron)
 
         outputNeuron.sigma = grad
-        outputNeuron.synapses.forEach(synapse => {
+
+        for (const synapse of outputNeuron.synapses) {
           adjustments.set(synapse, grad * synapse.neuron.output() * this.#learningRate)
-        })
+        }
       })
     }
 
@@ -66,7 +66,7 @@ export default class Backpropagation {
     }
   }
 
-  #calculateOutputGradient(neuron: ConnectableNeuronInterface, error) {
+  #calculateOutputGradient(neuron: ConnectableNeuronInterface, error: number) {
     return neuron.derivative() * error
   }
 
