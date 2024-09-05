@@ -1,9 +1,12 @@
 import Layer from "./layer.ts";
 import InputLayer from "./input-layer.ts";
 
-interface HiddenLayerConfiguration {
+interface LayerConfiguration {
   neurons: number
   activationFunction?: FunctionInterface
+}
+
+interface HiddenLayerConfiguration extends LayerConfiguration {
   bias?: number
 }
 
@@ -12,9 +15,9 @@ export default class Network {
   #outputLayer: Layer
   #hiddenLayers: Layer[] = []
 
-  constructor(inputs: number, outputs: number, hiddenLayers: HiddenLayerConfiguration[] = []) {
+  constructor(inputs: number, outputLayer: LayerConfiguration, hiddenLayers: HiddenLayerConfiguration[] = []) {
     this.#inputLayer = new InputLayer(inputs)
-    this.#outputLayer = new Layer(outputs, undefined, 0)
+    this.#outputLayer = new Layer(outputLayer.neurons, outputLayer.activationFunction, 0)
 
     let lastLayer: Layer | null = null;
 

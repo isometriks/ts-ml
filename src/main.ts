@@ -15,7 +15,7 @@ const xorSamples = [
   [[1, 1], [0]],
 ];
 
-const network = new Network(2, 1, [{ neurons: 3 }, { neurons: 3 }])
+const network = new Network(2, { neurons: 1 }, [{ neurons: 3 }, { neurons: 3 }])
 const renderer = new Renderer(document.getElementById("graph")!)
 const trainer = new Backpropagation(network, 0.3)
 
