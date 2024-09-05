@@ -1,19 +1,29 @@
 import Layer from "./layer.ts";
 import InputLayer from "./input-layer.ts";
 
+interface HiddenLayerConfiguration {
+  neurons: number,
+  activationFunction?: FunctionInterface
+}
+
 export default class Network {
   #inputLayer: InputLayer
   #outputLayer: Layer
   #hiddenLayers: Layer[] = []
 
-  constructor(inputs: number, outputs: number, hiddenLayers: number[] = []) {
+  constructor(inputs: number, outputs: number, hiddenLayers: HiddenLayerConfiguration[] = []) {
     this.#inputLayer = new InputLayer(inputs, undefined, false)
     this.#outputLayer = new Layer(outputs, undefined, false)
 
     let lastLayer: Layer | null = null;
 
-    for (const hiddenNodes of  hiddenLayers) {
-      const hiddenLayer = new Layer(hiddenNodes, undefined, false)
+    for (const layerConfiguration of  hiddenLayers) {
+      const hiddenLayer = new Layer(
+        layerConfiguration.neurons,
+        layerConfiguration.activationFunction,
+        false
+      )
+
       this.#hiddenLayers.push(hiddenLayer)
 
       if (lastLayer) {

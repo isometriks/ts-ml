@@ -11,9 +11,7 @@ export default class Sigmoid implements FunctionInterface {
   }
 
   static instance(): Sigmoid {
-    if (!this.#instance) {
-      this.#instance = new this();
-    }
+    this.#instance ??= new this();
 
     return this.#instance;
   }
